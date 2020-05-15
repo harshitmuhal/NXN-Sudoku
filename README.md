@@ -1,1 +1,1 @@
-# sudoku using recursion and backtracking
+# NXN sudoku using recursion and backtracking
