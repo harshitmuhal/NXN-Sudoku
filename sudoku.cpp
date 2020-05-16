@@ -4,21 +4,21 @@ using namespace std;
 int n;
 int sroot;
 
-bool solve(int i, int j, vector<vector<char>>&board, int rows[], int column[], vector<vector<int>>&subgrid) {
+bool solve(int i, int j, vector<vector<int>>&board, int rows[], int column[], vector<vector<int>>&subgrid) {
     if (i >= n || j >= n) {
         return true;
     }
-    if (board[i][j] == '0') {
+    if (board[i][j] == 0) {
         for (int k = 1; k <= n; k++) {
             int mask = 1 << (k - 1);
             if (!(rows[i]&mask || column[j]&mask || subgrid[i / sroot][j / sroot]&mask)) {
                 rows[i] |= mask;
                 column[j] |= mask;
-                board[i][j] = k + '0';
+                board[i][j] = k;
                 //cout << board[i][j] << endl;
                 subgrid[i / sroot][j / sroot] |= mask;
                 bool issolved = false;
-                if (j == 8) {
+                if (j == n - 1) {
                     issolved = solve(i + 1, 0, board, rows, column, subgrid);
                 }
                 else {
@@ -31,13 +31,13 @@ bool solve(int i, int j, vector<vector<char>>&board, int rows[], int column[], v
                     rows[i] &= (~mask);
                     column[j] &= (~mask);
                     subgrid[i / sroot][j / sroot] &= (~mask);
-                    board[i][j] = '0';
+                    board[i][j] = 0;
                 }
             }
         }
         return false;
     }
-    if (j == 8) {
+    if (j == n - 1) {
         return solve(i + 1, 0, board, rows, column, subgrid);
     }
     else {
@@ -45,7 +45,7 @@ bool solve(int i, int j, vector<vector<char>>&board, int rows[], int column[], v
     }
 }
 
-bool init(int n, vector<vector<char>>&board) {
+bool init(int n, vector<vector<int>>&board) {
     int rows[n];
     int column[n];
     fill(rows, rows + n, 0);
@@ -57,7 +57,7 @@ bool init(int n, vector<vector<char>>&board) {
 
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            int mask = 1 << (board[i][j] - '1');
+            int mask = 1 << (board[i][j] - 1);
             rows[i] |= mask;
             column[j] |= mask;
             subgrid[i / sroot][j / sroot] |= mask;
@@ -66,26 +66,31 @@ bool init(int n, vector<vector<char>>&board) {
 
     return solve(0, 0, board, rows, column, subgrid);
 }
-void shuffle(vector<char>&arr, int s, int e) {
+void shuffle(vector<int>&arr, int s, int e) {
     srand(time(0));
     for (int i = e; i >= s; i--) {
         int random_index = rand() % (i + 1);
         swap(arr[i], arr[random_index]);
     }
 }
-void RandomGenerator(int n, vector<vector<char>>&board) {
+void RandomGenerator(int n, vector<vector<int>>&board) {
     srand(time(0));
-    char j = '1';
+    int j = 1;
     //Randomly assigning data to each row and one of the columns randomly that too with
     //different data to avoid possibility of invalid sudoku getting generated.
     //example if data was also random than Generator could have selected element [1,2] and
     //[1,8] and assign them 8 but then row 1 would have 2 8's and that would be an invalid
     //sudoku
-    vector<char>temp;
-    while (j <= '9') {
+
+    //but still there is poss of invalid grid example-
+    //2 0
+    //0 1 for 2x2 sudoku..this one is invalid and can be generated using this
+    //implementation
+    vector<int>temp;
+    while (j <= n) {
         temp.push_back(j++);
     }
-    shuffle(temp, 0, 8);
+    shuffle(temp, 0, n - 1);
     int index = 0;
     for (int i = 0; i < n; i++) {
         int idx = rand() % n;
@@ -100,25 +105,25 @@ void RandomGenerator(int n, vector<vector<char>>&board) {
     int keep = min(rand() % (n * n), n * sroot);
     keep = max(n, keep);
 
-    vector<vector<char>>copy(n);
+    vector<vector<int>>copy(n);
     for (int i = 0; i < n; i++) {
-        copy[i].resize(n, '0');
+        copy[i].resize(n, 0);
     }
 
     while (keep > 0) {
         int i = rand() % n;
         int j = rand() % n;
-        if (copy[i][j] == '0') {
+        if (copy[i][j] == 0) {
             keep--;
             copy[i][j] = board[i][j];
         }
     }
     board = copy;
 }
-void print(int n, vector<vector<char>>&board) {
+void print(int n, vector<vector<int>>&board) {
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            cout << board[i][j];
+            cout << board[i][j] << " ";
         }
         cout << endl;
     }
@@ -135,9 +140,9 @@ int main() {
     c_p_c();
     cin >> n;
 
-    vector<vector<char>>board(n);
+    vector<vector<int>>board(n);
     for (int i = 0; i < n; i++) {
-        board[i].resize(n, '0');
+        board[i].resize(n, 0);
     }
 
     sroot = sqrt(n);
