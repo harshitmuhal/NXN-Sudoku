@@ -1,1 +1,2 @@
-# NXN sudoku using recursion and backtracking
+# NXN sudoku -
+Generates PseudoRandom Sudoku puzzles and also provide solution to these puzzles using backtracking and bitmasking.
