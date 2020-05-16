@@ -66,8 +66,14 @@ bool init(int n, vector<vector<char>>&board) {
 
     return solve(0, 0, board, rows, column, subgrid);
 }
-
-void PseudoRandomGenerator(int n, vector<vector<char>>&board) {
+void shuffle(vector<char>&arr, int s, int e) {
+    srand(time(0));
+    for (int i = e; i >= s; i--) {
+        int random_index = rand() % (i + 1);
+        swap(arr[i], arr[random_index]);
+    }
+}
+void RandomGenerator(int n, vector<vector<char>>&board) {
     srand(time(0));
     char j = '1';
     //Randomly assigning data to each row and one of the columns randomly that too with
@@ -75,10 +81,15 @@ void PseudoRandomGenerator(int n, vector<vector<char>>&board) {
     //example if data was also random than Generator could have selected element [1,2] and
     //[1,8] and assign them 8 but then row 1 would have 2 8's and that would be an invalid
     //sudoku
+    vector<char>temp;
+    while (j <= '9') {
+        temp.push_back(j++);
+    }
+    shuffle(temp, 0, 8);
+    int index = 0;
     for (int i = 0; i < n; i++) {
         int idx = rand() % n;
-        board[i][idx] = j;
-        j++;
+        board[i][idx] = temp[index++];
     }
 
     //First solve this sudoku with very less data
@@ -131,7 +142,7 @@ int main() {
 
     sroot = sqrt(n);
 
-    PseudoRandomGenerator(n, board);
+    RandomGenerator(n, board);
 
     cout << "PROBLEM-\n\n";
     print(n, board);
@@ -170,3 +181,6 @@ int main() {
 // 194836572
 // 567214389
 // 238579461
+
+
+
